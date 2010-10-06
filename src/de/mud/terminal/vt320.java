@@ -1599,6 +1599,8 @@ public void setScreenSize(int c, int r, boolean broadcast) {
                 debug("NEL (at " + R + " )");
               break;
             case HTS:
+              if (C >= columns)
+                C = columns - 1;
               Tabs[C] = 1;
               if (debug > 1)
                 debug("HTS");
@@ -2478,6 +2480,8 @@ public void setScreenSize(int c, int r, boolean broadcast) {
                 Tabs = new byte[width];
                 break;
               case 0:
+		if (C >= columns)
+		  C = columns - 1;
                 Tabs[C] = 0;
                 break;
             }
