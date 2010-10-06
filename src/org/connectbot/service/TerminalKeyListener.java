@@ -471,7 +471,7 @@ public class TerminalKeyListener implements OnKeyListener, OnSharedPreferenceCha
 		this.keymode = keymode;
 	}
 
-	private int getStateForBuffer() {
+	public int getStateForBuffer() {
 		int bufferState = 0;
 
 		if ((metaState & META_CTRL_MASK) != 0)

@@ -545,7 +545,9 @@ public class ConsoleActivity extends Activity {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
 					lastX = event.getX();
 					lastY = event.getY();
-				} else if (event.getAction() == MotionEvent.ACTION_UP
+				} else if (event.getAction() == MotionEvent.ACTION_UP) {
+					if (
+						config.hardKeyboardHidden != Configuration.KEYBOARDHIDDEN_NO
 						&& keyboardGroup.getVisibility() == View.GONE
 						&& event.getEventTime() - event.getDownTime() < CLICK_TIME
 						&& Math.abs(event.getX() - lastX) < MAX_CLICK_DISTANCE
@@ -562,6 +564,17 @@ public class ConsoleActivity extends Activity {
 							keyboardGroup.setVisibility(View.GONE);
 						}
 					}, KEYBOARD_DISPLAY_TIME);
+					} else {
+						View flip = findCurrentView(R.id.console_flip);
+						if (flip != null)
+						{
+							TerminalView terminal = (TerminalView)flip;
+							int mod = terminal.bridge.getKeyHandler().getStateForBuffer();
+							((vt320)terminal.bridge.buffer).mousePressed((int)Math.floor(lastX / terminal.bridge.charWidth), (int)Math.floor(lastY / terminal.bridge.charHeight), 16 | mod);
+							((vt320)terminal.bridge.buffer).mouseReleased((int)Math.floor(event.getX() / terminal.bridge.charWidth), (int)Math.floor(event.getY() / terminal.bridge.charHeight), 16 | mod);
+
+						}
+					}
 				}
 
 				// pass any touch events back to detector
