@@ -395,21 +395,36 @@ public class ConsoleActivity extends Activity {
 
 				final float distx = e2.getRawX() - e1.getRawX();
 				final float disty = e2.getRawY() - e1.getRawY();
-				final int goalwidth = flip.getWidth() / 2;
+				final int goalwidth = flip.getWidth() / 3;
 
 				// need to slide across half of display to trigger console change
 				// make sure user kept a steady hand horizontally
 				if (Math.abs(disty) < (flip.getHeight() / 4)) {
-					if (distx > goalwidth) {
+					if (flip.getChildCount() > 1) {
+					if (distx > 2*goalwidth) {
 						shiftCurrentTerminal(SHIFT_RIGHT);
 						return true;
 					}
 
-					if (distx < -goalwidth) {
+					if (distx < -2*goalwidth) {
 						shiftCurrentTerminal(SHIFT_LEFT);
 						return true;
 					}
-
+					}
+					if (Math.abs(distx) > goalwidth) {
+						View flip = findCurrentView(R.id.console_flip);
+						if (flip != null)
+						{
+							TerminalView terminal = (TerminalView)flip;
+							if (e1.getY() < flip.getHeight() / 2) {
+								((vt320)terminal.bridge.buffer).write(distx < 0 ? 0x0E : 0x14);
+							} else {
+								((vt320)terminal.bridge.buffer).write(0x01);
+								((vt320)terminal.bridge.buffer).write(distx < 0 ? ' ' : 'h');
+							}
+							return true;
+						}
+					}
 				}
 
 				return false;
