@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import org.connectbot.bean.HostBean;
@@ -130,6 +131,11 @@ public class HostEditorActivity extends PreferenceActivity implements OnSharedPr
 				return true;
 			}
 
+			// Gingerbread compatibility
+			public void apply() {
+				commit();
+			}
+
 			public android.content.SharedPreferences.Editor putBoolean(String key, boolean value) {
 				return this.putString(key, Boolean.toString(value));
 			}
@@ -158,6 +164,9 @@ public class HostEditorActivity extends PreferenceActivity implements OnSharedPr
 				return this;
 			}
 
+			public android.content.SharedPreferences.Editor putStringSet(String key, Set<String> value) {
+				throw new UnsupportedOperationException("HostEditor Prefs do not support Set<String>");
+			}
 		}
 
 
@@ -191,6 +200,10 @@ public class HostEditorActivity extends PreferenceActivity implements OnSharedPr
 
 			if(!values.containsKey(key)) return defValue;
 			return values.get(key);
+		}
+
+		public Set<String> getStringSet(String key, Set<String> defValue) {
+			throw new ClassCastException("HostEditor Prefs do not support Set<String>");
 		}
 
 		protected List<OnSharedPreferenceChangeListener> listeners = new LinkedList<OnSharedPreferenceChangeListener>();
