@@ -75,8 +75,6 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 import android.widget.AdapterView.OnItemClickListener;
 
-import com.nullwire.trace.ExceptionHandler;
-
 import de.mud.terminal.vt320;
 
 public class ConsoleActivity extends Activity {
@@ -132,6 +130,9 @@ public class ConsoleActivity extends Activity {
 	private Handler handler = new Handler();
 
 	private ImageView mKeyboardButton;
+
+	private ActionBarWrapper actionBar;
+	private boolean inActionBarMenu = false;
 
 	private ServiceConnection connection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
@@ -276,8 +277,6 @@ public class ConsoleActivity extends Activity {
 
 		this.setContentView(R.layout.act_console);
 
-		ExceptionHandler.register(this);
-
 		clipboard = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -370,6 +369,7 @@ public class ConsoleActivity extends Activity {
 
 				inputManager.showSoftInput(flip, InputMethodManager.SHOW_FORCED);
 				keyboardGroup.setVisibility(View.GONE);
+				actionBar.hide();
 			}
 		});
 
@@ -384,6 +384,7 @@ public class ConsoleActivity extends Activity {
 				handler.metaPress(TerminalKeyListener.META_CTRL_ON);
 
 				keyboardGroup.setVisibility(View.GONE);
+				actionBar.hide();
 			}
 		});
 
@@ -398,6 +399,20 @@ public class ConsoleActivity extends Activity {
 				handler.sendEscape();
 
 				keyboardGroup.setVisibility(View.GONE);
+				actionBar.hide();
+			}
+		});
+
+		actionBar = ActionBarWrapper.getActionBar(this);
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		actionBar.hide();
+		actionBar.addOnMenuVisibilityListener(new ActionBarWrapper.OnMenuVisibilityListener() {
+			public void onMenuVisibilityChanged(boolean isVisible) {
+				inActionBarMenu = isVisible;
+				if (isVisible == false) {
+					keyboardGroup.setVisibility(View.GONE);
+					actionBar.hide();
+				}
 			}
 		});
 
@@ -584,14 +599,16 @@ public class ConsoleActivity extends Activity {
 						&& Math.abs(event.getY() - lastY) < MAX_CLICK_DISTANCE) {
 					keyboardGroup.startAnimation(keyboard_fade_in);
 					keyboardGroup.setVisibility(View.VISIBLE);
+					actionBar.show();
 
 					handler.postDelayed(new Runnable() {
 						public void run() {
-							if (keyboardGroup.getVisibility() == View.GONE)
+							if (keyboardGroup.getVisibility() == View.GONE || inActionBarMenu)
 								return;
 
 							keyboardGroup.startAnimation(keyboard_fade_out);
 							keyboardGroup.setVisibility(View.GONE);
+							actionBar.hide();
 						}
 					}, KEYBOARD_DISPLAY_TIME);
 					} else {
@@ -837,6 +854,19 @@ public class ConsoleActivity extends Activity {
 		resize.setEnabled(sessionOpen);
 
 		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case android.R.id.home:
+				Intent intent = new Intent(this, HostListActivity.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(intent);
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
+		}
 	}
 
 	@Override
