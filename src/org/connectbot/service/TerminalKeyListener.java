@@ -188,10 +188,13 @@ public class TerminalKeyListener implements OnKeyListener, OnSharedPreferenceCha
 
 			int uchar = event.getUnicodeChar(curMetaState);
 			// no hard keyboard?  ALT-k should pass through to below
+			// no it shouldn't, as some symbols need this (<> on my phone)
+			/*
 			if ((orgMetaState & KeyEvent.META_ALT_ON) != 0 &&
 					(!hardKeyboard || hardKeyboardHidden)) {
 				uchar = 0;
 			}
+			*/
 
 			if ((uchar & KeyCharacterMap.COMBINING_ACCENT) != 0) {
 				mDeadKey = uchar & KeyCharacterMap.COMBINING_ACCENT_MASK;
@@ -431,6 +434,27 @@ public class TerminalKeyListener implements OnKeyListener, OnSharedPreferenceCha
 				bridge.redraw();
 
 				return true;
+
+			case KeyEvent.KEYCODE_CLEAR:
+				((vt320) buffer).keyPressed(vt320.KEY_DELETE, ' ',
+						getStateForBuffer());
+				metaState &= ~META_TRANSIENT;
+				return true;
+
+			case KeyEvent.KEYCODE_PAGE_UP:
+				((vt320) buffer).keyPressed(vt320.KEY_PAGE_UP, ' ',
+						getStateForBuffer());
+				metaState &= ~META_TRANSIENT;
+				bridge.tryKeyVibrate();
+				return true;
+
+			case KeyEvent.KEYCODE_PAGE_DOWN:
+				((vt320) buffer).keyPressed(vt320.KEY_PAGE_DOWN, ' ',
+						getStateForBuffer());
+				metaState &= ~META_TRANSIENT;
+				bridge.tryKeyVibrate();
+				return true;
+
 			}
 
 		} catch (IOException e) {
