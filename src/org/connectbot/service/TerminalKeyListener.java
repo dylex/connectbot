@@ -403,20 +403,17 @@ public class TerminalKeyListener implements OnKeyListener, OnSharedPreferenceCha
 			case KeyEvent.KEYCODE_CLEAR:
 				((vt320) buffer).keyPressed(vt320.KEY_DELETE, ' ',
 						getStateForBuffer());
-				metaState &= ~META_TRANSIENT;
 				return true;
 
 			case KeyEvent.KEYCODE_PAGE_UP:
 				((vt320) buffer).keyPressed(vt320.KEY_PAGE_UP, ' ',
 						getStateForBuffer());
-				metaState &= ~META_TRANSIENT;
 				bridge.tryKeyVibrate();
 				return true;
 
 			case KeyEvent.KEYCODE_PAGE_DOWN:
 				((vt320) buffer).keyPressed(vt320.KEY_PAGE_DOWN, ' ',
 						getStateForBuffer());
-				metaState &= ~META_TRANSIENT;
 				bridge.tryKeyVibrate();
 				return true;
 
