@@ -571,13 +571,12 @@ public class ConsoleActivity extends Activity {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
 					lastX = event.getX();
 					lastY = event.getY();
-				} else if (event.getAction() == MotionEvent.ACTION_UP) {
-					if (
-						config.hardKeyboardHidden != Configuration.KEYBOARDHIDDEN_NO
-						&& keyboardGroup.getVisibility() == View.GONE
+				} else if (event.getAction() == MotionEvent.ACTION_UP
 						&& event.getEventTime() - event.getDownTime() < CLICK_TIME
 						&& Math.abs(event.getX() - lastX) < MAX_CLICK_DISTANCE
 						&& Math.abs(event.getY() - lastY) < MAX_CLICK_DISTANCE) {
+					if (config.hardKeyboardHidden != Configuration.KEYBOARDHIDDEN_NO
+						&& keyboardGroup.getVisibility() == View.GONE) {
 					keyboardGroup.startAnimation(keyboard_fade_in);
 					keyboardGroup.setVisibility(View.VISIBLE);
 
